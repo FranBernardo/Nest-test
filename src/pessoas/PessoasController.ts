@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { PessoaService } from './Pessoa.service';
-import { Pessoa } from './Pessoa.model';
+import { Pessoas } from './schemas/pessoa.schema';
+import { CreatePessoaDto } from './dto/create-pessoa.dto';
 @Controller('cadastro/pessoas')
 export class PessoasController {
   constructor(private pessoaService: PessoaService){
@@ -9,28 +10,28 @@ export class PessoasController {
   }
 
   @Get()
-  TodosUsuarios(): Pessoa[] {
+  async TodosUsuarios(): Promise<Pessoas[]> {
     return this.pessoaService.TodosUsuarios();
   }
 
   @Get(':id') 
-  UmUsuario(@Param() pessoas): Pessoa {
+  async UmUsuario(@Param() pessoas): Promise<Pessoas> {
     return this.pessoaService.UmUsuario(pessoas.id)
   }
 
   @Post()
-  Cadastro(@Body() pessoas: Pessoa) {
-    this.pessoaService.Criar(pessoas)
-    return 'salvo com sucesso'
+  async Cadastro(@Body() createPessoaDto: CreatePessoaDto) {
+    await this.pessoaService.Criar(createPessoaDto)
+    return 'salvo!'
   }
 
-  @Put()
-  Editar(@Body() pessoas: Pessoa): Pessoa {
-    return this.pessoaService.Editar(pessoas)
-  }
+  // @Put()
+  // Editar(@Body() pessoas: Pessoas): Pessoas {
+  //   return this.pessoaService.Editar(pessoas)
+  // }
 
   @Delete(':id')
-  Delete(@Param() pessoas){
-    return this.pessoaService.Deletar(pessoas.id)
+  async Delete(@Param('id') id: string){
+    return this.pessoaService.Deletar(id)
   }
 }

@@ -2,30 +2,37 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { Pessoa } from './Pessoa.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreatePessoaDto } from './dto/create-pessoa.dto';
+import { Pessoas, PessoasDocument } from './schemas/pessoa.schema'
 @Injectable()
 export class PessoaService {
-    pessoas: Pessoa[] = [
-        new Pessoa('fran', 12972458494, '11/04/1998', 'rua monte verde' )
-    ];
+    constructor(
+        @InjectModel(Pessoas.name) private readonly pessoasModel: Model<PessoasDocument>
+    ){
+
+    }
     
-    TodosUsuarios(): Pessoa[]{
-        return this.pessoas
+    async TodosUsuarios(): Promise<Pessoas[]>{
+        return this.pessoasModel.find().exec()
     }
 
-    UmUsuario(id: number): Pessoa{
-        return this.pessoas[0]
+   async UmUsuario(id: number): Promise<Pessoas>{
+        return this.pessoasModel.findOne({_id: id})
     }
 
-    Criar(pessoa: Pessoa){
-        return this.pessoas.push(pessoa)
+    async Criar(createPessoaDto: CreatePessoaDto){
+        const pessoasCriada = await this.pessoasModel.create(createPessoaDto)
+        return pessoasCriada
     }
 
-    Editar(pessoas: Pessoa): Pessoa{
-        return pessoas
-    }
+    // async Editar(pessoas: Pessoas): Pessoa{
+    //     return pessoas
+    // }
 
-    Deletar(id: number): Pessoa{
-        return this.pessoas.pop()
+    async Deletar(id: string): Promise<Pessoas>{
+        const removePessoa = await this.pessoasModel.findByIdAndRemove({_id: id}).exec()
+        return removePessoa
     }
 }

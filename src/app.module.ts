@@ -1,12 +1,16 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PessoaService } from './pessoas/Pessoa.service';
-import { PessoasController } from './pessoas/PessoasController';
+import { MongooseModule } from '@nestjs/mongoose';
+import { PessoaModule } from './pessoas/Pessoa.module';
+
 
 @Module({
-  imports: [],
-  controllers: [AppController, PessoasController],
-  providers: [AppService, PessoaService],
+  imports: [MongooseModule.forRoot('mongodb+srv://biblioteca:12345@cluster0.jszgenl.mongodb.net/?retryWrites=true&w=majority'),
+  PessoaModule,
+],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
